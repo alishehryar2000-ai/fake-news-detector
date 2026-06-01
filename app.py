@@ -1,6 +1,5 @@
 import streamlit as st
 import pickle
-import numpy as np
 
 model = pickle.load(open('best_model.pkl', 'rb'))
 tfidf = pickle.load(open('tfidf_vectorizer.pkl', 'rb'))
@@ -23,12 +22,12 @@ if st.button("🔍 Detect", use_container_width=True):
 
         st.divider()
 
-        if prediction == 1:
-            st.error("🚨 This news appears to be **FAKE**")
-            st.metric("Confidence", f"{round(probability[1]*100, 1)}%")
-        else:
+        if prediction == 0:
             st.success("✅ This news appears to be **REAL**")
             st.metric("Confidence", f"{round(probability[0]*100, 1)}%")
+        else:
+            st.error("🚨 This news appears to be **FAKE**")
+            st.metric("Confidence", f"{round(probability[1]*100, 1)}%")
 
 st.divider()
 st.caption("Built with Scikit-learn + Streamlit | BSCS ML Project")

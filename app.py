@@ -4,17 +4,37 @@ import pickle
 model = pickle.load(open('best_model.pkl', 'rb'))
 tfidf = pickle.load(open('tfidf_vectorizer.pkl', 'rb'))
 
-st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
+st.markdown("""
+<div style="
+background: linear-gradient(90deg,#4F46E5,#7C3AED);
+padding:25px;
+border-radius:15px;
+text-align:center;
+color:white;
+margin-bottom:20px;
+">
+<h1>📰 Fake News Detector</h1>
+<p>AI Powered News Verification System</p>
+</div>
+""", unsafe_allow_html=True)
 
-st.title("📰 Fake News Detector")
-st.markdown("Paste any news article or headline below to check if it's **Real** or **Fake**.")
-st.divider()
+user_input = st.text_area(
+    "💡 For best accuracy, paste a complete news article rather than a short headline."
+)
 
-user_input = st.text_area("Enter news text here:", height=200, placeholder="Paste your news article or headline...")
+if st.buttonwith st.sidebar:
 
-if st.button("🔍 Detect", use_container_width=True):
-    if user_input.strip() == "":
-        st.warning("Please enter some text first.")
+    st.header("📊 Project Details")
+
+    st.write("Model: XGBoost")
+    st.write("Vectorizer: TF-IDF")
+    st.write("Dataset: WELFake")
+    st.write("Type: NLP Classification")
+
+    st.divider()
+
+    st.write("Developer:")
+    st.write("Ali Shehryar And Mohammad Umar")
     else:
         vector = tfidf.transform([user_input])
         prediction = model.predict(vector)[0]
@@ -22,12 +42,33 @@ if st.button("🔍 Detect", use_container_width=True):
 
         st.divider()
 
-        if prediction == 0:
-            st.success("✅ This news appears to be **REAL**")
-            st.metric("Confidence", f"{round(probability[0]*100, 1)}%")
-        else:
-            st.error("🚨 This news appears to be **FAKE**")
-            st.metric("Confidence", f"{round(probability[1]*100, 1)}%")
+       if prediction == 1:
 
+    confidence = probability[1] * 100
+
+    st.error("🚨 FAKE NEWS DETECTED")
+
+    st.progress(int(confidence))
+
+    st.metric(
+        label="Confidence",
+        value=f"{confidence:.2f}%"
+    )
+
+else:
+
+    confidence = probability[0] * 100
+
+    st.success("✅ REAL NEWS DETECTED")
+
+    st.progress(int(confidence))
+
+    st.metric(
+        label="Confidence",
+        value=f"{confidence:.2f}%"
+    )
 st.divider()
-st.caption("Built with Scikit-learn + Streamlit | BSCS ML Project")
+
+st.caption(
+    "Built using Streamlit, TF-IDF and XGBoost | BSCS Machine Learning Project"
+)

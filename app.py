@@ -22,51 +22,40 @@ user_input = st.text_area(
     "💡 For best accuracy, paste a complete news article rather than a short headline."
 )
 
-if st.buttonwith st.sidebar:
-
+with st.sidebar:
     st.header("📊 Project Details")
-
     st.write("Model: XGBoost")
     st.write("Vectorizer: TF-IDF")
     st.write("Dataset: WELFake")
     st.write("Type: NLP Classification")
+    st.divider()
+    st.write("Developer:")
+    st.write("Ali Shehryar And Mohammad Umar")
+
+if st.button("Verify"):
+    vector = tfidf.transform([user_input])
+    prediction = model.predict(vector)[0]
+    probability = model.predict_proba(vector)[0]
 
     st.divider()
 
-    st.write("Developer:")
-    st.write("Ali Shehryar And Mohammad Umar")
+    if prediction == 1:
+        confidence = probability[1] * 100
+        st.error("🚨 FAKE NEWS DETECTED")
+        st.progress(int(confidence))
+        st.metric(
+            label="Confidence",
+            value=f"{confidence:.2f}%"
+        )
     else:
-        vector = tfidf.transform([user_input])
-        prediction = model.predict(vector)[0]
-        probability = model.predict_proba(vector)[0]
+        confidence = probability[0] * 100
+        st.success("✅ REAL NEWS DETECTED")
+        st.progress(int(confidence))
+        st.metric(
+            label="Confidence",
+            value=f"{confidence:.2f}%"
+        )
 
-        st.divider()
-
-       if prediction == 1:
-
-    confidence = probability[1] * 100
-
-    st.error("🚨 FAKE NEWS DETECTED")
-
-    st.progress(int(confidence))
-
-    st.metric(
-        label="Confidence",
-        value=f"{confidence:.2f}%"
-    )
-
-else:
-
-    confidence = probability[0] * 100
-
-    st.success("✅ REAL NEWS DETECTED")
-
-    st.progress(int(confidence))
-
-    st.metric(
-        label="Confidence",
-        value=f"{confidence:.2f}%"
-    )
 st.divider()
 
 st.caption(
